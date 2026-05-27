@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(python --version)",
+      "PowerShell(node --version)",
+      "PowerShell(npm --version)",
+      "PowerShell(Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force; Invoke-RestMethod -Uri https://get.scoop.sh | Invoke-Expression)",
+      "PowerShell($env:PATH = \"$env:USERPROFILE\\\\scoop\\\\shims;$env:PATH\"; scoop install python nodejs-lts)",
+      "PowerShell($pthFile = \"D:\\\\tools\\\\python312\\\\python312._pth\"; [System.IO.File]::ReadAllText\\($pthFile\\) | Write-Host)"
+    ]
+  }
+}

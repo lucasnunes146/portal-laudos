@@ -1,9 +1,9 @@
 'use client'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import toast, { Toaster } from 'react-hot-toast'
-import { Plus, Upload, ChevronRight, Search } from 'lucide-react'
+import { Upload, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import { Card, CardBody, CardHeader } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
@@ -14,9 +14,9 @@ import { Report, Patient } from '@/lib/types'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
-interface UploadForm { title: string; description: string; patient: string }
+interface UploadForm { title: string; description: string }
 
-export default function ReportsPage() {
+function ReportsContent() {
   const searchParams = useSearchParams()
   const [reports, setReports] = useState<Report[]>([])
   const [loading, setLoading] = useState(true)
@@ -28,7 +28,7 @@ export default function ReportsPage() {
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
 
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<UploadForm>()
+  const { register, handleSubmit, reset } = useForm<UploadForm>()
 
   const load = async () => {
     setLoading(true)
@@ -106,8 +106,7 @@ export default function ReportsPage() {
                 )}
               </div>
               <Input label="Título *" placeholder="Ex: Audiometria Tonal Simples"
-                error={errors.title?.message}
-                {...register('title', { required: 'Título obrigatório' })} />
+                {...register('title', { required: true })} />
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Arquivo * (PDF ou imagem)</label>
                 <input ref={fileRef} type="file" accept=".pdf,.jpg,.jpeg,.png"
@@ -163,5 +162,13 @@ export default function ReportsPage() {
         </div>
       </Card>
     </div>
+  )
+}
+
+export default function ReportsPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" /></div>}>
+      <ReportsContent />
+    </Suspense>
   )
 }

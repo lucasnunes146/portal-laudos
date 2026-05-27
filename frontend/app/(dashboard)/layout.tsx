@@ -24,6 +24,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           router.replace('/portal')
           return
         }
+        if (u.role === 'superadmin' && !window.location.pathname.startsWith('/superadmin')) {
+          router.replace('/superadmin')
+          return
+        }
         setUser(u)
       })
       .catch(() => {

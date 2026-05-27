@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
-  LayoutDashboard, Users, FileText, Shield, Settings, LogOut, Activity
+  LayoutDashboard, Users, FileText, Shield, Settings, LogOut, Activity, Building2
 } from 'lucide-react'
 import { clsx } from 'clsx'
 import { User } from '@/lib/types'
@@ -15,6 +15,7 @@ interface SidebarProps {
 
 const navItems = (user: User) => {
   const items = [
+    { href: '/superadmin', label: 'Clientes', icon: Building2, roles: ['superadmin'] },
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['admin', 'secretary', 'doctor'] },
     { href: '/patients', label: 'Pacientes', icon: Users, roles: ['admin', 'secretary', 'doctor'] },
     { href: '/reports', label: 'Laudos', icon: FileText, roles: ['admin', 'secretary', 'doctor'] },

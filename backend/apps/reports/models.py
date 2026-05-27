@@ -15,6 +15,7 @@ class Report(models.Model):
     STATUS_SIGNED = 'signed'
     STATUS_PUBLISHED = 'published'
     STATUS_REJECTED = 'rejected'
+    STATUS_REVISION = 'revision'
 
     STATUS_CHOICES = [
         (STATUS_UPLOADED, 'Enviado'),
@@ -22,6 +23,7 @@ class Report(models.Model):
         (STATUS_SIGNED, 'Assinado'),
         (STATUS_PUBLISHED, 'Publicado'),
         (STATUS_REJECTED, 'Rejeitado'),
+        (STATUS_REVISION, 'Em Revisão'),
     ]
 
     patient = models.ForeignKey(
@@ -54,6 +56,12 @@ class Report(models.Model):
         'accounts.User', on_delete=models.SET_NULL,
         null=True, blank=True, related_name='published_reports'
     )
+    rejected_by = models.ForeignKey(
+        'accounts.User', on_delete=models.SET_NULL,
+        null=True, blank=True, related_name='rejected_reports'
+    )
+
+    doctor_notes = models.TextField(blank=True, verbose_name='Observações do médico')
 
     # Digital signature (MVP: SHA-256)
     digital_signature = models.TextField(blank=True)
@@ -62,6 +70,7 @@ class Report(models.Model):
     approved_at = models.DateTimeField(null=True, blank=True)
     signed_at = models.DateTimeField(null=True, blank=True)
     published_at = models.DateTimeField(null=True, blank=True)
+    rejected_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

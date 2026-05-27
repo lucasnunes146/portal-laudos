@@ -1,4 +1,4 @@
-export type UserRole = 'admin' | 'secretary' | 'doctor' | 'patient'
+export type UserRole = 'superadmin' | 'admin' | 'secretary' | 'doctor' | 'patient'
 
 export interface User {
   id: number
@@ -23,6 +23,10 @@ export interface Clinic {
   email: string
   address: string
   is_active: boolean
+  plan: string
+  plan_display: string
+  license_active: boolean
+  license_valid_until: string | null
   created_at: string
   settings?: ClinicSettings
 }
@@ -54,7 +58,7 @@ export interface Patient {
   updated_at: string
 }
 
-export type ReportStatus = 'uploaded' | 'approved' | 'signed' | 'published' | 'rejected'
+export type ReportStatus = 'uploaded' | 'approved' | 'signed' | 'published' | 'rejected' | 'revision'
 
 export interface Report {
   id: number
@@ -71,13 +75,41 @@ export interface Report {
   uploaded_by_name: string | null
   approved_by_name: string | null
   signed_by_name: string | null
+  rejected_by_name: string | null
   digital_signature: string
   signature_metadata: Record<string, unknown>
+  doctor_notes: string
   approved_at: string | null
   signed_at: string | null
   published_at: string | null
+  rejected_at: string | null
   created_at: string
   updated_at: string
+}
+
+export interface SuperAdminClinic {
+  id: number
+  name: string
+  cnpj: string
+  email: string
+  phone: string
+  is_active: boolean
+  plan: string
+  plan_display: string
+  license_active: boolean
+  license_valid_until: string | null
+  license_notes: string
+  users_count: number
+  patients_count: number
+  created_at: string
+}
+
+export interface SuperAdminDashboard {
+  total_clinics: number
+  active_clinics: number
+  inactive_clinics: number
+  total_patients: number
+  total_reports: number
 }
 
 export interface AuditLog {

@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from apps.patients.serializers import PatientListSerializer
 from .models import Report
 
 
@@ -9,6 +8,7 @@ class ReportSerializer(serializers.ModelSerializer):
     uploaded_by_name = serializers.SerializerMethodField()
     approved_by_name = serializers.SerializerMethodField()
     signed_by_name = serializers.SerializerMethodField()
+    rejected_by_name = serializers.SerializerMethodField()
     status_display = serializers.CharField(source='get_status_display', read_only=True)
 
     def get_uploaded_by_name(self, obj):
@@ -20,20 +20,24 @@ class ReportSerializer(serializers.ModelSerializer):
     def get_signed_by_name(self, obj):
         return obj.signed_by.get_full_name() if obj.signed_by else None
 
+    def get_rejected_by_name(self, obj):
+        return obj.rejected_by.get_full_name() if obj.rejected_by else None
+
     class Meta:
         model = Report
         fields = [
             'id', 'patient', 'patient_name', 'patient_protocol',
             'title', 'description', 'file_name', 'file_size', 'file_hash',
             'status', 'status_display',
-            'uploaded_by_name', 'approved_by_name', 'signed_by_name',
+            'uploaded_by_name', 'approved_by_name', 'signed_by_name', 'rejected_by_name',
             'digital_signature', 'signature_metadata',
-            'approved_at', 'signed_at', 'published_at', 'created_at', 'updated_at'
+            'doctor_notes',
+            'approved_at', 'signed_at', 'published_at', 'rejected_at', 'created_at', 'updated_at',
         ]
         read_only_fields = [
             'id', 'file_name', 'file_size', 'file_hash', 'status',
             'digital_signature', 'signature_metadata',
-            'approved_at', 'signed_at', 'published_at', 'created_at', 'updated_at'
+            'approved_at', 'signed_at', 'published_at', 'rejected_at', 'created_at', 'updated_at',
         ]
 
 

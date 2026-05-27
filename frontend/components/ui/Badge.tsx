@@ -7,6 +7,7 @@ const statusConfig: Record<ReportStatus, { label: string; className: string }> =
   signed: { label: 'Assinado', className: 'bg-purple-100 text-purple-800' },
   published: { label: 'Publicado', className: 'bg-green-100 text-green-800' },
   rejected: { label: 'Rejeitado', className: 'bg-red-100 text-red-800' },
+  revision: { label: 'Em Revisão', className: 'bg-orange-100 text-orange-800' },
 }
 
 export function StatusBadge({ status }: { status: ReportStatus }) {

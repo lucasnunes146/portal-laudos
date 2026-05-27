@@ -2,12 +2,28 @@ from django.db import models
 
 
 class Clinic(models.Model):
+    PLAN_FREE = 'free'
+    PLAN_BASIC = 'basic'
+    PLAN_PRO = 'pro'
+    PLAN_CHOICES = [
+        (PLAN_FREE, 'Gratuito'),
+        (PLAN_BASIC, 'Básico'),
+        (PLAN_PRO, 'Profissional'),
+    ]
+
     name = models.CharField(max_length=200, verbose_name='Nome')
     cnpj = models.CharField(max_length=18, blank=True, verbose_name='CNPJ')
     phone = models.CharField(max_length=20, blank=True)
     email = models.EmailField(blank=True)
     address = models.TextField(blank=True)
     is_active = models.BooleanField(default=True)
+
+    # License management
+    plan = models.CharField(max_length=20, choices=PLAN_CHOICES, default=PLAN_FREE)
+    license_active = models.BooleanField(default=True, verbose_name='Licença ativa')
+    license_valid_until = models.DateField(null=True, blank=True, verbose_name='Válida até')
+    license_notes = models.TextField(blank=True, verbose_name='Observações da licença')
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

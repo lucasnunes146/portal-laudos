@@ -1,12 +1,12 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import toast, { Toaster } from 'react-hot-toast'
+import { ImagePlus } from 'lucide-react'
 import { Card, CardBody, CardHeader } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { clinicApi, authApi } from '@/lib/api'
-import { ClinicSettings, Clinic } from '@/lib/types'
 
 interface SettingsForm {
   portal_title: string
@@ -14,6 +14,7 @@ interface SettingsForm {
   welcome_message: string
   footer_text: string
   primary_color: string
+  secondary_color: string
 }
 
 interface PasswordForm {
@@ -24,7 +25,9 @@ interface PasswordForm {
 
 export default function SettingsPage() {
   const [saving, setSaving] = useState(false)
-  const [clinic, setClinic] = useState<Clinic | null>(null)
+  const [currentLogo, setCurrentLogo] = useState<string | null>(null)
+  const [logoPreview, setLogoPreview] = useState<string | null>(null)
+  const logoRef = useRef<HTMLInputElement>(null)
 
   const { register, handleSubmit, reset } = useForm<SettingsForm>()
   const { register: regPw, handleSubmit: handlePw, reset: resetPw, formState: { errors: pwErrors } } = useForm<PasswordForm>()
@@ -32,8 +35,8 @@ export default function SettingsPage() {
   useEffect(() => {
     clinicApi.getSettings().then(r => {
       reset(r.data)
+      setCurrentLogo(r.data.logo_url || null)
     }).catch(() => {})
-    clinicApi.get().then(r => setClinic(r.data)).catch(() => {})
   }, [reset])
 
   const onSaveSettings = async (data: SettingsForm) => {
@@ -41,7 +44,12 @@ export default function SettingsPage() {
     try {
       const fd = new FormData()
       Object.entries(data).forEach(([k, v]) => fd.append(k, v as string))
-      await clinicApi.updateSettings(fd)
+      if (logoRef.current?.files?.[0]) {
+        fd.append('logo', logoRef.current.files[0])
+      }
+      const res = await clinicApi.updateSettings(fd)
+      setCurrentLogo(res.data.logo_url || null)
+      setLogoPreview(null)
       toast.success('Configurações salvas!')
     } catch { toast.error('Erro ao salvar.') }
     finally { setSaving(false) }
@@ -54,8 +62,7 @@ export default function SettingsPage() {
       toast.success('Senha alterada!')
       resetPw()
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: Record<string, string[]> } })
-        ?.response?.data
+      const msg = (err as { response?: { data?: Record<string, string[]> } })?.response?.data
       toast.error(Object.values(msg || {}).flat()[0] || 'Erro ao alterar senha.')
     } finally { setSaving(false) }
   }
@@ -66,9 +73,51 @@ export default function SettingsPage() {
       <h1 className="text-2xl font-bold text-gray-900">Configurações</h1>
 
       <Card>
-        <CardHeader><h2 className="font-semibold">Portal do Paciente</h2></CardHeader>
+        <CardHeader><h2 className="font-semibold">Identidade Visual</h2></CardHeader>
         <CardBody>
-          <form onSubmit={handleSubmit(onSaveSettings)} className="space-y-4">
+          <form onSubmit={handleSubmit(onSaveSettings)} className="space-y-5">
+            {/* Logo */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Logo da clínica</label>
+              <div className="flex items-center gap-4">
+                <div className="w-20 h-20 rounded-xl border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden bg-gray-50">
+                  {(logoPreview || currentLogo) ? (
+                    <img src={logoPreview || currentLogo!} alt="Logo" className="w-full h-full object-contain" />
+                  ) : (
+                    <ImagePlus size={24} className="text-gray-400" />
+                  )}
+                </div>
+                <div>
+                  <label className="cursor-pointer inline-flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                    <input
+                      ref={logoRef}
+                      type="file"
+                      accept=".png,.jpg,.jpeg,.svg,.webp"
+                      className="hidden"
+                      onChange={e => {
+                        const f = e.target.files?.[0]
+                        if (f) setLogoPreview(URL.createObjectURL(f))
+                      }}
+                    />
+                    Escolher imagem
+                  </label>
+                  <p className="text-xs text-gray-400 mt-1">PNG, JPG ou SVG. Máx 2 MB.</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Colors */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex items-center gap-3">
+                <label className="block text-sm font-medium text-gray-700 w-28">Cor principal</label>
+                <input type="color" {...register('primary_color')} className="h-8 w-16 rounded cursor-pointer border border-gray-300" />
+              </div>
+              <div className="flex items-center gap-3">
+                <label className="block text-sm font-medium text-gray-700 w-28">Cor secundária</label>
+                <input type="color" {...register('secondary_color')} className="h-8 w-16 rounded cursor-pointer border border-gray-300" />
+              </div>
+            </div>
+
             <Input label="Título do portal" placeholder="Portal de Laudos" {...register('portal_title')} />
             <Input label="Subtítulo" placeholder="Acesse seus laudos com segurança" {...register('portal_subtitle')} />
             <div>
@@ -77,10 +126,7 @@ export default function SettingsPage() {
                 {...register('welcome_message')} />
             </div>
             <Input label="Texto do rodapé" {...register('footer_text')} />
-            <div className="flex items-center gap-3">
-              <label className="block text-sm font-medium text-gray-700">Cor principal</label>
-              <input type="color" {...register('primary_color')} className="h-8 w-16 rounded cursor-pointer border border-gray-300" />
-            </div>
+
             <div className="flex justify-end">
               <Button type="submit" loading={saving}>Salvar</Button>
             </div>

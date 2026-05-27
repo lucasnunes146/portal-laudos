@@ -124,10 +124,18 @@ function ReportsContent() {
       <Card>
         <CardHeader>
           <div className="flex gap-3 flex-wrap">
-            {['', 'uploaded', 'approved', 'signed', 'published'].map(s => (
-              <button key={s} onClick={() => setStatusFilter(s)}
-                className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${statusFilter === s ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
-                {s === '' ? 'Todos' : s === 'uploaded' ? 'Enviado' : s === 'approved' ? 'Aprovado' : s === 'signed' ? 'Assinado' : 'Publicado'}
+            {[
+              { v: '', l: 'Todos' },
+              { v: 'uploaded', l: 'Enviado' },
+              { v: 'revision', l: 'Em Revisão' },
+              { v: 'approved', l: 'Aprovado' },
+              { v: 'signed', l: 'Assinado' },
+              { v: 'published', l: 'Publicado' },
+              { v: 'rejected', l: 'Rejeitado' },
+            ].map(({ v, l }) => (
+              <button key={v} onClick={() => setStatusFilter(v)}
+                className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${statusFilter === v ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+                {l}
               </button>
             ))}
           </div>

@@ -53,6 +53,21 @@ class Command(BaseCommand):
                 )
                 self.stdout.write(f'  Usuário criado: {user.username} ({user.role})')
 
+        # Super admin (owner of the SaaS platform — no clinic)
+        if not User.objects.filter(username='superadmin').exists():
+            User.objects.create_user(
+                username='superadmin',
+                password='Super@12345',
+                role=User.ROLE_SUPERADMIN,
+                first_name='Super',
+                last_name='Admin',
+                email='superadmin@portal.com',
+                clinic=None,
+                is_staff=True,
+                is_superuser=True,
+            )
+            self.stdout.write('  Usuário criado: superadmin (superadmin)')
+
         self.stdout.write(self.style.SUCCESS('\nDados iniciais criados com sucesso!'))
         self.stdout.write('\nCredenciais:')
         self.stdout.write('  Admin:      admin / Admin@12345')

@@ -4,12 +4,14 @@ from django.db import models
 
 
 class User(AbstractUser):
+    ROLE_SUPERADMIN = 'superadmin'
     ROLE_ADMIN = 'admin'
     ROLE_SECRETARY = 'secretary'
     ROLE_DOCTOR = 'doctor'
     ROLE_PATIENT = 'patient'
 
     ROLE_CHOICES = [
+        (ROLE_SUPERADMIN, 'Super Admin'),
         (ROLE_ADMIN, 'Administrador'),
         (ROLE_SECRETARY, 'Secretária'),
         (ROLE_DOCTOR, 'Médica'),
@@ -39,7 +41,7 @@ class User(AbstractUser):
 
     @property
     def is_staff_member(self):
-        return self.role in (self.ROLE_ADMIN, self.ROLE_SECRETARY, self.ROLE_DOCTOR)
+        return self.role in (self.ROLE_ADMIN, self.ROLE_SECRETARY, self.ROLE_DOCTOR, self.ROLE_SUPERADMIN)
 
     def __str__(self):
         return f'{self.get_full_name() or self.username} ({self.role})'

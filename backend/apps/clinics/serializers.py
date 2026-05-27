@@ -20,9 +20,11 @@ class ClinicSettingsSerializer(serializers.ModelSerializer):
 
 class ClinicSerializer(serializers.ModelSerializer):
     settings = ClinicSettingsSerializer(read_only=True)
+    plan_display = serializers.CharField(source='get_plan_display', read_only=True)
 
     class Meta:
         model = Clinic
         fields = ['id', 'name', 'cnpj', 'phone', 'email', 'address',
-                  'is_active', 'created_at', 'settings']
+                  'is_active', 'plan', 'plan_display', 'license_active',
+                  'license_valid_until', 'created_at', 'settings']
         read_only_fields = ['id', 'created_at']

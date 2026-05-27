@@ -84,9 +84,22 @@ export const reportsApi = {
   upload: (data: FormData) =>
     api.post('/api/reports/', data, { headers: { 'Content-Type': 'multipart/form-data' } }),
   approve: (id: number) => api.post(`/api/reports/${id}/approve/`),
+  reject: (id: number, notes: string) => api.post(`/api/reports/${id}/reject/`, { notes }),
+  requestRevision: (id: number, notes: string) => api.post(`/api/reports/${id}/revision/`, { notes }),
+  reupload: (id: number, data: FormData) =>
+    api.post(`/api/reports/${id}/reupload/`, data, { headers: { 'Content-Type': 'multipart/form-data' } }),
   sign: (id: number) => api.post(`/api/reports/${id}/sign/`),
   publish: (id: number) => api.post(`/api/reports/${id}/publish/`),
   getDownloadUrl: (id: number) => api.get(`/api/reports/${id}/download/`),
+}
+
+// Super Admin
+export const superAdminApi = {
+  dashboard: () => api.get('/api/auth/superadmin/dashboard/'),
+  listClinics: () => api.get('/api/auth/superadmin/clinics/'),
+  getClinic: (id: number) => api.get(`/api/auth/superadmin/clinics/${id}/`),
+  updateClinic: (id: number, data: Record<string, unknown>) =>
+    api.patch(`/api/auth/superadmin/clinics/${id}/`, data),
 }
 
 // Audit
